@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://test1:123123qwe@cluster0-kzfrl.mongodb.net/StockDb?retryWrites=true&w=majority",
+    "jwtSecret": "mysecrettoken"
+}
