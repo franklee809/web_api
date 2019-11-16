@@ -19,28 +19,28 @@ const Login = ({ login, isAuthenticated} ) => {
     const onSubmit = async e => {e.preventDefault();
 
             login({email,password});
-            const newUser = {
-                email,password
-            }
+            // const newUser = {
+            //     email,password
+            // }
 
-            try{
-                const config = {
-                    headers:{
-                        'Content-Type': 'application/json',
-                    }
-                }
+            // try{
+            //     const config = {
+            //         headers:{
+            //             'Content-Type': 'application/json',
+            //         }
+            //     }
 
-                const body = JSON.stringify(newUser);
-                // var a = '';
-                // if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"){
-                //     var a = 'http://localhost:5000'
-                // }
+            //     const body = JSON.stringify(newUser);
+            //     // var a = '';
+            //     // if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"){
+            //     //     var a = 'http://localhost:5000'
+            //     // }
 
-                const res = await axios.post('http://localhost:5000/api/users',body,config);
-                console.log(res.data);
-            }catch(err){
-                console.error(err);
-            }
+            //     const res = await axios.post('http://localhost:5000/api/users',body,config);
+            //     console.log(res.data);
+            // }catch(err){
+            //     console.error(err);
+            // }
         }
 
     // Redirect if logged in and
@@ -56,7 +56,7 @@ const Login = ({ login, isAuthenticated} ) => {
             </div>
             <h1 className="large text-primary">Sign In</h1>
             <p className="lead"><i className="fas fa-user"></i> Sign into Your Account</p>
-            <form className="form" action="dashboard.html">
+            <form className="form" onSubmit={e=>onSubmit(e)} >
             <div className="form-group">
                 <input type="text" 
                 placeholder="Name" 
