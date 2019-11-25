@@ -3,7 +3,7 @@ import {Link,Redirect} from 'react-router-dom'
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types'
 import {login} from '../../actions/auth'
-import axios from 'axios'
+
 
 const Login = ({ login, isAuthenticated} ) => {
 
@@ -19,28 +19,6 @@ const Login = ({ login, isAuthenticated} ) => {
     const onSubmit = async e => {e.preventDefault();
 
             login({email,password});
-            // const newUser = {
-            //     email,password
-            // }
-
-            // try{
-            //     const config = {
-            //         headers:{
-            //             'Content-Type': 'application/json',
-            //         }
-            //     }
-
-            //     const body = JSON.stringify(newUser);
-            //     // var a = '';
-            //     // if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"){
-            //     //     var a = 'http://localhost:5000'
-            //     // }
-
-            //     const res = await axios.post('http://localhost:5000/api/users',body,config);
-            //     console.log(res.data);
-            // }catch(err){
-            //     console.error(err);
-            // }
         }
 
     // Redirect if logged in and
