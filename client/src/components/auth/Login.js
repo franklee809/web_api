@@ -24,7 +24,7 @@ const Login = ({ login, isAuthenticated} ) => {
     // Redirect if logged in and
 
     if(isAuthenticated){
-        return <Redirect to="/dashboard" /> 
+        return <Redirect to="/home" /> 
     }
     return (
         <Fragment>

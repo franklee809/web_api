@@ -79,13 +79,19 @@ router.delete('/deleteAll', async(req,res) =>{
 // @route       GET api/home/searchStock?search="title"
 // @desc        Search all record within the database
 // @access      Public 
-router.get('/searchStock', async (req, res) =>{
+router.get('/searchStock', async (req, res) =>{ 
 
     try{
         var title = await stockList.find({name: {$regex:`.*${req.query.search}.*`}}).limit(10)
 
-        // var model = new search({'search': req.query.search, 'created': new Date().toISOString().slice(0, 19).replace('T', ' ')});
-        // model.save();
+        if(title.length == false){
+            res.status(500).send('Title not found');
+        }
+        // res.send(typeof req.query.user);
+        if(req.query.user !== 'null' ){
+            var model = new search({'user_id': req.query.user,'search': req.query.search, 'created': new Date().toISOString().slice(0, 19).replace('T', ' '),'note':''});
+            model.save();
+        }
         
         arr = {};
         for(let i = 0; i < title.length; i++){arr[title[i].symbol] = title[i]}
@@ -106,10 +112,9 @@ router.get('/searchStock', async (req, res) =>{
 
 router.post('/companyProfile', async(req, res) =>{
     var link = `https://financialmodelingprep.com/api/v3/company/profile/${req.query.symbol}`;
-    // res.send(link);
     try{
         axios.get(link).then(response=>{ 
-            res.send(response.data)
+            res.send(response.data.profile)
         })
     }catch(err){
         res.status(500).send(err);
@@ -117,4 +122,18 @@ router.post('/companyProfile', async(req, res) =>{
 
 })
 
+// @route       DELETE api/home/deleteSearchHistory
+// @desc        Delete all documents within search table 
+// @access      Private 
+router.delete('/deleteSearchHistory',async (req,res)=>{
+    res.send(await search.find({}).remove())
+})
+
+router.post('/getSearchHistory',async (req,res)=>{
+    res.send(await search.find({'user_id':req.query.id}));
+})
+
+router.delete('/deleteOne',async (req,res)=>{
+    res.send(await search.findByIdAndDelete(req.query.id));
+})
 module.exports = router; 

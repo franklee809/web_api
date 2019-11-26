@@ -9,6 +9,8 @@ import Login from './components/auth/Login'
 import Alert from './components/layout/Alert'
 import {loadUser} from './actions/auth'
 import Dashboard from './components/dashboard/Dashboard'
+import Profile from './components/profile/Profile'
+import History from './components/history/History'
 // import PrivateRoute from './components/routing/PrivateRoute'
 import Home from './components/home/Home'
 import setAuthToken from './utils/setAuthToken'
@@ -38,8 +40,9 @@ const App = ()=> {
             <Switch>
               <Route exact path="/register" component={Register}/>
               <Route exact path="/login" component={Login}/>
-              {/* <PrivateRoute exact path="/dashboard" component={Dashboard}/> */}
               <Route exact path="/home" component={Home}/>              
+              <Route exact path="/profile" component={Profile}/>   
+              <Route exact path="/history" component={History}/>          
             </Switch>
           </section>
         </Fragment>

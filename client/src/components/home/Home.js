@@ -1,10 +1,22 @@
 import React,{Fragment,Component} from 'react';
 import ReactTable from 'react-table';
 import {InputGroup,Input,Button} from 'reactstrap';
+import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import 'react-table/react-table.css';
 import axios from 'axios'; 
-// import Search from './search';
+import {Redirect,Link} from 'react-router-dom'
 import  './search.css'
+import { Alert } from 'reactstrap';
+
+const options = {
+  // you can also just use 'bottom center'
+  position: positions.BOTTOM_CENTER,
+  timeout: 5000,
+  offset: '30px',
+  // you can also just use 'scale'
+  transition: transitions.SCALE
+}
+ 
 
 class Home extends Component {
     constructor() {
@@ -15,10 +27,13 @@ class Home extends Component {
           data:[],
           symbols:'',
           tempArr:[],
+          redirect:false,
+          error:{"display":"none"},
           columns: [
             {  
                 Header: 'Symbol',  
                 accessor: 'symbol',
+                maxWidth: 100,
                 headerStyle: { textAlign: 'left', 'backgroundColor': '#4CAF50', color: 'white',   'paddingTop': '12px','paddingBottom': '12px'},
             },
             {  
@@ -30,18 +45,42 @@ class Home extends Component {
               Header: 'Price',  
               accessor: 'price',
               headerStyle: { textAlign: 'left' ,'backgroundColor': '#4CAF50',color: 'white','paddingTop': '12px','paddingBottom': '12px'},
-            }] ,
+            },
+            { 
+              Header: 'Profile',
+              headerStyle: { textAlign: 'left' ,'backgroundColor': '#4CAF50',color: 'white','paddingTop': '12px','paddingBottom': '12px'},
+              maxWidth: 100,
+              Cell : row => (
+                <div> {this.viewProfile(row.original.symbol)}<Button color="secondary" onClick={this.setRedirect}>Look</Button></div>
+              )
+            }
+          ] ,
           pageIndex: 0,
-          search: ''
+          search: '',
+          user:null
         };
         this.startPoint();
         this.handleChange = this.handleChange.bind(this);
+        this.isAuthenticated()
       }
 
       next = () =>{
         this.state.limit += 10;
       }
-
+      
+      isAuthenticated(){
+        var token = localStorage.getItem('token')
+        if(token != null){
+          axios.get('http://localhost:5000/api/auth',{
+            'header':{
+              'x-auth-token': token
+            }
+          }).then(response=>{
+              this.state.user = response.data._id
+              this.setState({user:this.state.user})
+          })
+        }
+      }
       async startPoint(index = null){
         var self = this;
         if(this.state.pageIndex < index || index === null){
@@ -56,6 +95,19 @@ class Home extends Component {
             self.getPrice();
         }
       }
+      viewProfile(symbol){
+        if (this.state.redirect) {
+         return <Redirect to={{
+              pathname:'/profile', 
+              state:{"symbol": symbol}}}/> 
+         }
+      }
+      setRedirect = () => {
+        this.setState({
+          redirect: true
+        })
+      }
+      
 
       goTop(){
         document.body.scrollTop = 0; // For Safari
@@ -92,16 +144,28 @@ class Home extends Component {
       e.preventDefault();
       this.state.loading = true
       if(this.state.search != '' && this.state.loading === true){
-        axios.get(`http://localhost:5000/api/home/searchStock?search=${this.state.search}`)
+        axios.get(`http://localhost:5000/api/home/searchStock?search=${this.state.search}&user=${this.state.user}`)
         .then(res =>{
-          this.state.data = res.data
-          this.setState({data:res.data});
-          // console.log(res.data)
+          console.log(res.status)
+          if(res.status != 200){
+            this.state.error = {"display":"inline"};
+            this.setState({error:this.state.error});
+            setTimeout(function() {this.setState({error: {"display":"none"}});}.bind(this),3000);
+          }
+          else{
+            this.state.data = res.data
+            this.setState({data:res.data});
+          }
           this.state.loading = false;
-        })  
+
+        }).catch(err=>{
+          console.log(err)
+          this.state.error = {"display":"inline"};
+          this.setState({error:this.state.error});
+          setTimeout(function() {this.setState({error: {"display":"none"}});}.bind(this),3000);})
       }
     }
-
+  
     handleChange(e){
       this.setState({search:e.target.value})
     }
@@ -110,9 +174,13 @@ class Home extends Component {
             <Fragment>
               <div className="main">
                   <h2> Stock List</h2>
+                  <Alert color="danger" style={this.state.error}>
+                    No Search Result...
+                  </Alert>
                   <InputGroup >
                       <Input placeholder="Stock name" value={this.state.search} onChange={(e)=>{this.handleChange(e)}}/>
                       <Button color="primary" type="submit" onClick={(e)=>{this.search(e)}} >Search</Button> 
+                      <Button color="secondary"><Link to="/history">History</Link></Button> 
                   </InputGroup>
               </div>
 

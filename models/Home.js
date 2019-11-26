@@ -14,7 +14,9 @@ const realTimePriceSchema = new mongoose.Schema({
 
 const searchHistorySchema = new mongoose.Schema({
     search: { type: String},
-    created: {type: String}
+    created: {type: String},
+    user_id:{type: String},
+    note:{type: String}
 })
 module.exports.StockList = mongoose.model('stock_list',StockListSchema,'stock_list');
 module.exports.PriceList = mongoose.model('price_list',realTimePriceSchema,'price_list');
